@@ -11,7 +11,7 @@
              .select("field", "field1", "field2", "field4")
 */
 'use strict';
-var jql = function jql() {
+var jql = function () {
   /**
   私有属性
   */
@@ -37,43 +37,43 @@ var jql = function jql() {
     /**
       判断数组是否为空
     */
-    isEmpty: function isEmpty(array) {
+    isEmpty: function(array) {
       return typeof array === 'undefined' || array.length === 0;
     },
     /**
       判断参数是否为数组
     */
-    isArray: function isArray(array) {
+    isArray: function(array) {
       return util.hasProperty(array, 'length') && !util.isString(array) && !util.isFunction(array);
     },
     /**
       判断参数是否为对象
     */
-    isObject: function isObject(obj) {
+    isObject: function(obj) {
       return obj !== null && (obj.constructor === Object || util.isArray(obj));
     },
     /**
       判断参数是否为字符串
     */
-    isString: function isString(str) {
+    isString: function(str) {
       return str !== null && str.constructor === String;
     },
     /**
       判断某对象(第一个参数)是否含有扣个key(第二个参数)
     */
-    hasProperty: function hasProperty(obj, property) {
+    hasProperty: function(obj, property) {
       return obj[property] !== undefined;
     },
     /**
       判断参数是否为函数
     */
-    isFunction: function isFunction(func) {
+    isFunction: function(func) {
       return typeof func === 'function';
     },
     /**
       判断参数是否为数字
     */
-    isNumber: function isNumber(value) {
+    isNumber: function(value) {
       return typeof value === 'number';
     },
     /**
@@ -91,7 +91,7 @@ var jql = function jql() {
       }
       如果obj内没有相应列，则会返回0
     */
-    condenseToFields: function condenseToFields(obj, fields) {
+    condenseToFields: function(obj, fields) {
       var newObj = {};
       if (util.isArray(fields)) {
         for (var index = 0; index < fields.length; index++) {
@@ -107,7 +107,7 @@ var jql = function jql() {
       在指定数组(collection)内查找和指定对象的值(obj)相同的列。第三个参数表示是否直接返回查找到的第一个结果
       如果没有找到，返回null而不是空数组
     */
-    arrayFindItem: function arrayFindItem(collection, obj, findFirst) {
+    arrayFindItem: function(collection, obj, findFirst) {
       findFirst = findFirst || false;
       var isMatched = false;
       var ret = [];
@@ -132,13 +132,13 @@ var jql = function jql() {
       }
       return ret.length === 0 ? null : ret;
     },
-    arrayFindFirstItem: function arrayFindFirstItem(collection, obj) {
+    arrayFindFirstItem: function(collection, obj) {
       return util.arrayFindItem(collection, obj, true);
     },
     /**
       连接数组
     */
-    concatCollection: function concatCollection(collection) {
+    concatCollection: function(collection) {
       var concatCollection = [];
       for (var index = 0; index < collection.length; index++) {
         concatCollection = concatCollection.concat(collection[index]);
@@ -149,7 +149,7 @@ var jql = function jql() {
       聚合函数，在self.groups之后调用。调用完成后会清空self.groups
       使用第二个参数的fn作为聚合后的新列的值
     */
-    aggregator: function aggregator(args, fn) {
+    aggregator: function(args, fn) {
       var collection = [];
       var keys = null;
       var values = null;
@@ -184,7 +184,7 @@ var jql = function jql() {
   /**
     接收数据集。可以传多个数据集。
   */
-  var _from = function _from() {
+  var _from = function() {
     if (arguments.length === 0) return jql;
     for (var index = 0; index < arguments.length; index++) {
       self.collections.push(arguments[index]);
@@ -197,7 +197,7 @@ var jql = function jql() {
     筛选方法。传入一个返回值为true或false的函数，会保留执行函数后返回值为true的数据
     如果没有传或者传入的参数不是函数，则直接返回
   */
-  var _where = function _where(predicate) {
+  var _where = function(predicate) {
     if (typeof predicate === "undefined") return jql;
     if (!util.isFunction(predicate)) return jql;
     self.result = self.result.filter(predicate);
@@ -207,7 +207,7 @@ var jql = function jql() {
   /**
     选择输出的列。该函数一般最后调用
   */
-  var _select = function _select() {
+  var _select = function() {
     if (util.isEmpty(self.result)) return [];
     if (arguments.length === 0) return self.result;
 
@@ -230,7 +230,7 @@ var jql = function jql() {
   /**
     组合函数
   */
-  var _groupBy = function _groupBy() {
+  var _groupBy = function() {
     self.groups = util.concatCollection(arguments);
     return this;
   };
@@ -239,7 +239,7 @@ var jql = function jql() {
     求和函数，一般在group之后调用。求指定列的和
     如果在group之前调用，会直接以传入的参数作为数据列，并逐项累加
   */
-  var _sum = function _sum() {
+  var _sum = function() {
     var sum = null;
     if (self.groups.length === 0) {
       sum = 0;
@@ -263,7 +263,7 @@ var jql = function jql() {
   /**
     求平均值。具体用法和sum类似
   */
-  var _avg = function _avg() {
+  var _avg = function() {
     var avg = null;
     if (self.groups.length === 0) {
       avg = 0;
@@ -296,8 +296,9 @@ var jql = function jql() {
     2. 传进来一个function，则按照function排序
     3. 啥都不传则不排序
   */
-  var _orderBy = function _orderBy() {
+  var _orderBy = function() {
     if (arguments.length === 0) return this;
+    if(self.result.length == 0) return this;
     var fields = arguments;
     if (fields.length === 1) {
       var field = fields[0];
@@ -323,7 +324,7 @@ var jql = function jql() {
   /**
     逆序
   */
-  var _desc = function _desc() {
+  var _desc = function() {
     self.result.reverse();
     return this;
   };
@@ -331,7 +332,7 @@ var jql = function jql() {
   /**
     返回首/尾指定个数个元素。参数为正，从首开始返回amount个元素，参数为负，从尾返回abs(amount)个元素
    */
-  var _top = function _top(amount) {
+  var _top = function(amount) {
     var totalRows;
     totalRows = Math.abs(parseInt(amount));
     if (amount < 0) {
@@ -346,7 +347,7 @@ var jql = function jql() {
     传入一个列名，返回该列所有不重复的数据
     如果不传则不进行去重操作
   */
-  var _distinct = function _distinct(field) {
+  var _distinct = function(field) {
     if (typeof field === "undefined") return this;
     var collection = [];
     var row = null;
@@ -377,7 +378,9 @@ var jql = function jql() {
 (function(global, fn) {
   // AMD / RequireJS
   if (typeof define !== 'undefined' && define.amd) {
-    define(fn);
+    define('jql', [], function() {
+      return fn
+    });
   }
   // Node.js
   else if (typeof module !== 'undefined' && module.exports) {
